@@ -1,0 +1,33 @@
+{% load static %}
+<html>
+  <head>
+    <title>CoopLaTeX: Online LaTeX editor!</title>
+    <link href="https://fonts.googleapis.com/css?family=Alfa+Slab+One" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="{% static 'login/css/bootstrap.min.css' %}" />
+    <link rel="stylesheet" type="text/css" href="{% static 'login/css/style.css' %}"/>
+    <script type="text/javascript" src="{% static 'login/js/jquery-3.2.1.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'login/js/popper.js' %}"></script>
+    <script type="text/javascript" src="{% static 'login/js/bootstrap.min.js' %}"></script>
+  </head>
+  <body>
+    <nav class="navbar navbar-light bg-light">
+      <a class="navbar-brand" href="{% url 'login:index' %}">
+        <span class="coopLatex">
+          CoopLaTeX
+        </span>
+      </a>
+
+      <div class="align-items-end">
+          <a href="{% url 'login:signIn' %}">
+            <button type="button" class="btn btn-primary btn-sm">Sign In</button>
+          </a>
+          <a href="{% url 'login:register' %}">
+            <button type="button" class="btn btn-outline-secondary btn-sm">Sign Up</button>
+          </a>
+      </div>
+    </nav>
+    <div class="d-flex justify-content-center lower-100">
+      Welcome To CoopLaTeX!
+    </div>
+  </body>
+</html>

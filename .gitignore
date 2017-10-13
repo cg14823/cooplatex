@@ -1,0 +1,4 @@
+.envrc
+.vscode/
+db.sqlite
+__pycache__/

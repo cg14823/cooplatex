@@ -1,0 +1,69 @@
+{% load static %}
+<html>
+  <head>
+    <title>CoopLaTeX: Online LaTeX editor!</title>
+    <link href="https://fonts.googleapis.com/css?family=Alfa+Slab+One" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="{% static 'login/css/bootstrap.min.css' %}" />
+    <link rel="stylesheet" type="text/css" href="{% static 'login/css/style.css' %}"/>
+    <script type="text/javascript" src="{% static 'login/js/jquery-3.2.1.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'login/js/popper.js' %}"></script>
+    <script type="text/javascript" src="{% static 'login/js/bootstrap.min.js' %}"></script>
+  </head>
+  <body>
+    <nav class="navbar navbar-light bg-light">
+        <a class="navbar-brand" href="{% url 'login:index' %}">
+          <span class="coopLatex">
+            CoopLaTeX
+          </span>
+        </a>
+    </nav>
+
+    <div class="container h-100">
+      {% if error_message %} 
+      <div class="row justify-content-center">
+        <span class="form-error">{{error_message}} </span>  
+      </div>
+      {% endif %}
+      <div class="row h-100 justify-content-center">
+        <form class="lower-100"
+          action="{% url 'login:register' %}"
+          method="post">
+          {% csrf_token %}
+          <div class="form-group row">
+              <label for="inputName" class="col-sm-3 col-form-label">
+                Name
+              </label>
+              <div class="col-sm-9">
+                {{form.name}}
+              </div>
+            </div>
+          <div class="form-group row">
+            <label for="inputEmail" class="col-sm-3 col-form-label">
+              Email
+            </label>
+            <div class="col-sm-9">
+              {{form.email}}
+            </div>
+          </div>
+          <div class="form-group row">
+            <label for="inputPassword" class="col-sm-3 col-form-label">
+              Password
+            </label>
+            <div class="col-sm-9">
+                {{form.password}}
+            </div>
+          </div>
+          <div class="form-group row">
+            <label for="inputPassword1" class="col-sm-3 col-form-label">
+              Password
+            </label>
+            <div class="col-sm-9">
+                {{form.password1}}
+            </div>
+          </div>
+          <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+      </div>
+    </div>
+  </body>
+</html>

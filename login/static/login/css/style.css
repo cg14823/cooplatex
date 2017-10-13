@@ -1,0 +1,15 @@
+.coopLatex {
+  font-family: 'Alfa Slab One', cursive;
+  color: rgb(98.4%, 12.4%, 1.5%);
+}
+
+.lower-100 {
+  padding-top: 100px;
+}
+
+.form-error {
+  font-weight: bold;
+  color: rgb(99.9%, 11.2%, 0%);
+  margin-bottom: -100;
+  margin-top: 50px;
+}
