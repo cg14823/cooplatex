@@ -1,6 +1,5 @@
 from django import forms
 
-
 class RegisterForm(forms.Form):
     name = forms.CharField(widget=forms.TextInput({
       'required': True,
@@ -30,3 +29,18 @@ class RegisterForm(forms.Form):
       'id': 'inputPassword1',
       'placeholder': 'Retype Password'
     }), min_length=8)
+
+class SignInForm(forms.Form):
+  email = forms.EmailField(widget=forms.EmailInput(attrs={
+      'required': True,
+      'id': 'inputEmail',
+      'class': 'form-control',
+      'placeholder': 'Email'
+  }))
+
+  password = forms.CharField(widget=forms.PasswordInput(attrs={
+      'required': True,
+      'class': 'form-control',
+      'id': 'inputPassword',
+      'placeholder': 'Password'
+    }))
