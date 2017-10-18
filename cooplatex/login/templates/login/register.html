@@ -17,7 +17,7 @@
           </span>
         </a>
     </nav>
-
+    {% if not done %}
     <div class="container h-100">
       {% if error_message %} 
       <div class="row justify-content-center">
@@ -65,5 +65,14 @@
         </form>
       </div>
     </div>
+    {% endif %}
+
+    {% if done %}
+    <div class="container h-100">
+      <div class="row justify-content-center">
+        THANK YOU FOR REGISTERING VERIFY EMAIL TO CONTINUE :)
+      </div>
+    </div>
+    {% endif %}
   </body>
 </html>

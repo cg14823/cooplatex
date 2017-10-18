@@ -20,15 +20,20 @@
         </a>
     </nav>
     <div class="container h-80">
+      {% if error_message %} 
+      <div class="row justify-content-center">
+        <span class="form-error">{{error_message}} </span>  
+      </div>
+      {% endif %}
       <div class="row h-100 justify-content-center ">
-        <form class="lower-100" action="/signin/" method="post">
+        <form class="lower-100" action="{% url 'login:signIn' %}" method="post">
           {% csrf_token %}
           <div class="form-group row">
             <label for="inputEmail" class="col-sm-3 col-form-label">
               Email
             </label>
             <div class="col-sm-9">
-              <input type="email" class="form-control" id="inputEmail" placeholder="Email">
+              {{ form.email }}
             </div>
           </div>
           <div class="form-group row">
@@ -36,7 +41,7 @@
               Password
             </label>
             <div class="col-sm-9">
-              <input type="password" class="form-control" id="inputPassword" placeholder="Password">
+              {{ form.password }}
             </div>
           </div>
           <button type="submit" class="btn btn-primary">Submit</button>
