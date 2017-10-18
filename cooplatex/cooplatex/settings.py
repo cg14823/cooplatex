@@ -79,7 +79,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'cooplatex',
         'HOST': os.environ['POSTGRES_HOST'],
-        'PORT':'',
+        'PORT': os.environ['POSTGRES_PORT'],
         'USER': os.environ['POSTGRES_USER'],
         'PASSWORD': os.environ['POSTGRES_PASSWORD'],
     }
