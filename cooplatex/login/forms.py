@@ -1,6 +1,8 @@
+""" Forms for the login app"""
 from django import forms
 
 class RegisterForm(forms.Form):
+    """ Register form"""
     name = forms.CharField(widget=forms.TextInput({
       'required': True,
       'id': 'inputName',

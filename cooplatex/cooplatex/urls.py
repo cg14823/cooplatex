@@ -18,7 +18,8 @@ from django.shortcuts import redirect
 from django.contrib import admin
 
 urlpatterns = [
-    url(r'^$', lambda r:redirect('home/')),
-    url(r'^home/', include('login.urls')),
+    url(r'^$', lambda r: redirect('home/')),
+    url(r'^home/', include('login.urls', namespace='login')),
+    url(r'^dash/', include('editor.urls', namespace='editor')),
     url(r'^admin/', admin.site.urls),
 ]

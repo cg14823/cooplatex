@@ -1,0 +1,39 @@
+.coopLatex {
+  font-family: 'Alfa Slab One', cursive;
+  color: rgb(98.4%, 12.4%, 1.5%);
+}
+
+.lower-100 {
+  padding-top: 100px;
+}
+
+.form-error {
+  font-weight: bold;
+  color: rgb(99.9%, 11.2%, 0%);
+  margin-bottom: -100;
+  margin-top: 50px;
+}
+
+.no-porjects-card {
+    padding-top: 10px;
+    padding-bottom: 10px;
+    background: #74c2e6b7;
+}
+
+.table-box {
+    margin: 10px 10px 10px 10px;
+    background: #ffffff;
+}
+
+.project-bar {
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+.maright-10 {
+    margin-right: 10px;
+}
+
+body {
+ background:  #eeeeee;
+}

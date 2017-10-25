@@ -26,8 +26,14 @@
           </a>
       </div>
     </nav>
-    <div class="d-flex justify-content-center lower-100">
-      Welcome To CoopLaTeX!
+    <div class="jumbotron">
+        <h1 class="display-3">Welcome to CoopLaTeX!</h1>
+        <p class="lead">CoopLaTeX is a collborative LaTeX editor. Create store and share all your projects, available anywhere! </p>
+        <hr class="my-4">
+        <p>Get started by singning up.</p>
+        <p class="lead">
+            <a class="btn btn-primary btn-lg" href="{% url 'login:register' %}" role="button">Sign Up</a>
+        </p>
     </div>
   </body>
 </html>

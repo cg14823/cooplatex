@@ -1,0 +1,173 @@
+{% load static %}
+<html>
+  <head>
+    <title>CoopLaTeX: Online LaTeX editor!</title>
+    <link href="https://fonts.googleapis.com/css?family=Alfa+Slab+One" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap.min.css' %}" />
+    <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}"/>
+    <link rel="stylesheet" type="text/css" href="{% static 'css/octicons.min.css' %}" media="screen" title="no title"/>
+    <script type="text/javascript" src="{% static 'js/jquery-3.2.1.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/popper.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/bootstrap.min.js' %}"></script>
+  </head>
+  <body>
+    <nav class="navbar navbar-light bg-light">
+      <a class="navbar-brand" href="{% url 'login:index' %}">
+        <span class="coopLatex">
+          CoopLaTeX
+        </span>
+      </a>
+
+      <div class="align-items-end">
+        <div class="dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Account
+            </a>
+            <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                <a class="dropdown-item" href="#">Settigns</a>
+                <a class="dropdown-item" href="{% url 'editor:signout' %}">Sign Out</a>
+            </div>
+        </div>
+      </div>
+    </nav>
+    {%if error_message %}
+    <div class="alert alert-danger fade show" role="alert">
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+        {{error_message}}
+    </div>
+    {% endif %}
+
+    {%if success_message %}
+    <div class="alert alert-success fade show" role="alert">
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+        {{success_message}}
+    </div>
+    {% endif %}
+    <div class="container-fluid">
+        {% if not has_project %}
+        <div class="card text-center">
+            <div class="no-porjects-card">
+                <div class="card-block">
+                    <h4 class="card-title">You have no projects.</h4>
+                    <p class="card-text">To get started press the button bellow to create yout first project.</p>
+                    <a href="#" class="btn btn-success" data-toggle="modal" data-target="#titleModal">Create project</a>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+        {% if has_project %}
+        <div class="row justify-content-between project-bar">
+            <div class="col-sm-6">SEARCH HERE</div>
+            <div class="maright-10">
+            <div class="col-sm-2 text-right">
+                
+                <button type="button" class="btn btn-primary btn-md" data-toggle="modal" data-target="#titleModal">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="16" viewBox="0 0 12 16"><path fill-rule="evenodd" d="M12 9H7v5H5V9H0V7h5V2h2v5h5z"/></svg>
+                </button>
+            </div>
+            </div>
+        </div>
+        {% endif %}
+        {% if my_projects|length > 0 %}
+        <h3>Your Projects</h3>
+        <div class="cotainer table-box">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Owner</th>
+                        <th>Modified</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for project in my_projects %}
+                    <tr>
+                        <td><a href="{{project.owner.id}}/{{project.name}}">{{ project.name }}</a></td>
+                        <td>YOU</td>
+                        <td>{{ project.date_modified }}</td>
+                        <td> 
+                            <div class="dropdown">
+                                <a class="" href="#" id="itemDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">       
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="3" height="16" viewBox="0 0 3 16"><path fill-rule="evenodd" d="M0 2.5a1.5 1.5 0 1 1 3 0 1.5 1.5 0 0 1-3 0zm0 5a1.5 1.5 0 1 1 3 0 1.5 1.5 0 0 1-3 0zm0 5a1.5 1.5 0 1 1 3 0 1.5 1.5 0 0 1-3 0z"/></svg> 
+                                </a>
+                                <div class="dropdown-menu dropdown-menu-right" aria-labelledby="itemDropdownMenuLink">
+                                        <a class="dropdown-item" href="#">Rename</a>
+                                        <a class="dropdown-item" href="#">Delete</a>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% endif %}
+        {% if shared_projects|length > 0 %}
+        <h3>Shared With You</h3>
+        <div class="cotainer table-box">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Owner</th>
+                        <th>Modified</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for project in shared_projects %}
+                    <tr>
+                        <td><a href="#">{{ project.name }}</a></td>
+                        <td>{{ project.owner.name }}</td>
+                        <td>{{ project.date_modified }}</td>
+                        <td> 
+                            <div class="dropdown">
+                                <a class="" href="#" id="itemDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">       
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="3" height="16" viewBox="0 0 3 16"><path fill-rule="evenodd" d="M0 2.5a1.5 1.5 0 1 1 3 0 1.5 1.5 0 0 1-3 0zm0 5a1.5 1.5 0 1 1 3 0 1.5 1.5 0 0 1-3 0zm0 5a1.5 1.5 0 1 1 3 0 1.5 1.5 0 0 1-3 0z"/></svg> 
+                                </a>
+                                <div class="dropdown-menu dropdown-menu-right" aria-labelledby="itemDropdownMenuLink">
+                                        <a class="dropdown-item" href="#">Leave project</a>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% endif %}
+    </div>
+
+
+    <div class="modal fade" id="titleModal" tabindex="-1" role="dialog" aria-labelledby="titleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Give a title to your project</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form
+                action="{% url 'editor:index' %}"
+                method="post" id ="create_form">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="project-name-input" class="form-control-label">Title:</label>
+                    {{form.project_name}}
+                </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                <button type="submit"  form="create_form" class="btn btn-primary">Create project</button>
+            </div>
+            </div>
+        </div>
+    </div>
+  </body>
+</html>
