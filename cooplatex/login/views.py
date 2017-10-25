@@ -1,8 +1,12 @@
-"""login app vies"""
+"""login app views"""
 
 from django.shortcuts import render, redirect
+from .forms import RegisterForm, SignInForm
+from .models import CustomUser
 from django.utils.crypto import get_random_string
 from django.contrib.auth import authenticate, login
+from django.core.mail import send_mail
+from django.http import HttpResponseNotFound
 from .forms import RegisterForm, SignInForm
 from .models import CustomUser
 
@@ -90,11 +94,23 @@ def make_user(name, email, password, request):
     user.verify_token = verify_token
     user.name = name
     user.save()
-    # sendEmail(user) to baseurl/verify/:USER/:VERIFYTOKEN
+    # sendEmail(user)
+    # TODO: don't hard code url
+    send_mail(
+        'CoopLaTeX: verification email',
+        'Here is your verification link: http://localhost:8000/home/verify/{}/{}'.format(user.id, user.verify_token),
+        'cooplatex@outlook.com',
+        [email],
+        
+    )
     return render(request, 'login/register.html', {'done':True})
 
-def send_email(user):
-    """ sends email to user """
-    # TODO: SEND USER VERIFICATION EMAIL  -------------------------------------------------------->
-    pass
-
+def verifyUser(request, userID, verifyToken):
+    if request.method == 'GET':
+        try:
+            user = CustomUser.objects.get(id=userID)
+        except CustomUser.DoesNotExist:
+            return HttpResponseNotFound('<h1>404<h1>')
+        if user.verify(verifyToken):
+            return render(request, 'login/success.html')
+    return HttpResponseNotFound('<h1>Invalid verification link<h1>')
