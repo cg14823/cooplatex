@@ -15,7 +15,7 @@ class Project(models.Model):
     owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     date_created = models.DateTimeField(default=timezone.now)
     date_modified = models.DateTimeField(default=timezone.now)
-    # url to files it will be in blob storage somewher
+    main_file = models.CharField(max_length=100, validators=[VALIDATOR], default="")
 
     def __str__(self):
         return "Name: {} Owner: <{}> Creation Date: {}".format(self.name, self.owner, self.date_created)

@@ -28,7 +28,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         # First check that project name is valid
         if (re.match(r'^[a-zA-Z][0-9a-zA-Z_]+$', project_name) and len(project_name) > 3 
             and len(project_name) <= 25):
-            return Project(name=project_name, owner=self).save()
+            return Project(name=project_name, owner=self, main_file="{}-{}-main.tex".format(self.id, project_name)).save()
 
         raise ValueError
 
