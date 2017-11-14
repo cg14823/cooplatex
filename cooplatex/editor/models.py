@@ -4,6 +4,9 @@ from django.utils import timezone
 from django.conf import settings
 from django.core.exceptions import PermissionDenied
 from django.core.validators import RegexValidator
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+
 
 # TODO: create functions for file creation but they will be dependent on how we store files
 VALIDATOR = RegexValidator(r'^[a-zA-Z][0-9a-zA-Z_]+$',
@@ -19,7 +22,7 @@ class Project(models.Model):
 
     def __str__(self):
         return "Name: {} Owner: <{}> Creation Date: {}".format(self.name, self.owner, self.date_created)
-
+    
     def add_collaborator(self, user_to_add, user_adding):
         """ Add collaborators to the project
         Returns Permisiondenied if user_adding is not owner
@@ -37,7 +40,7 @@ class Project(models.Model):
     def get_collaborators(self):
         """Get all collaborators to this project"""
         return Collaborations.objects.filter(project=self).values('collaborator') #pylint: disable=E1101
-    
+
     def remove_collaborator(self, user_to_remove, owner):
         """ Removes user from collaborators:
         Return true if removed
@@ -81,8 +84,17 @@ class Files(models.Model):
         ('other', 'other'),
     )
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
-    url = models.CharField(max_length=50)
-    file_name = models.CharField(max_length=20)
+    url = models.CharField(max_length=100)
+    file_name = models.CharField(max_length=100)
     file_type = models.CharField(max_length=6, choices=FILE_TYPE)
     class Meta:
         unique_together = (('project', 'file_name'))
+
+
+@receiver(post_save, sender=Project)
+def create_main_file(sender, instance, created, **kwargs):
+    """ Creates main file in database """
+    if created:
+        filename = "{}-{}-main.tex".format(instance.owner.id, instance.name)
+        f = Files.objects.get_or_create(project=instance, url=filename, file_name=filename,
+        file_type="tex")
