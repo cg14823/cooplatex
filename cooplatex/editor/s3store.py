@@ -25,6 +25,5 @@ def create_empty_file(file_name, project_name, owner_name):
     datestring = current_date.strftime("%B %Y")
     towrite = empty_template.format(project_name, owner_name, datestring)
 
-    print("HERREEEE")
     s3 = boto3.resource('s3')
     return s3.Bucket(os.environ["BUCKET_NAME"]).put_object(Key=file_name, Body=towrite.encode())
