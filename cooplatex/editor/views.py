@@ -1,11 +1,13 @@
 """Editor app views"""
 from django.shortcuts import render, redirect
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import logout
 from django.utils import timezone
 from .forms import ProjectCreateForm
 from .models import Project
+import json
+import re
 
 @login_required(login_url='/home/signin/')
 def index(request):
@@ -22,10 +24,8 @@ def index(request):
         'shared_projects': shared_projects,
     }
 
-    if request.method == "GET":
-        return render(request, 'editor/index.html', context)
-    elif request.method == "POST":
-        return create_porject(request, context)
+    return render(request, 'editor/index.html', context)
+
 
 @login_required(login_url='/home/signin/')
 def sign_out(request):
@@ -33,30 +33,38 @@ def sign_out(request):
     logout(request)
     return redirect('/home')
 
-
-def create_porject(request, context):
+@login_required(login_url='/home/signin/')
+def create_porject(request):
     """ creates a project """
-    form = ProjectCreateForm(request.POST)
 
-    if not form.is_valid():
-        context["error_message"] = "Project name is invalid"
-        return render(request, 'editor/index.html', context)
+    failed = {
+        "error_message":"Invalid request",
+        "statusCode":400,
+    }
+
+    if request.method =='POST':
+        project_name = request.POST.get("name")
+        if (not re.match(r'^[a-zA-Z][0-9a-zA-Z_]+$', project_name) and len(project_name) < 3 
+            and len(project_name) > 25):
+            failed["error_message"] = "Invalid project name."
+            return HttpResponse(json.dumps(failed), content_type="application/json")
     
-    project_name = form.cleaned_data['project_name']
+        if Project.objects.filter(owner=request.user, name=project_name).exists():
+            failed["error_message"] = "Project with this name already exists"
+            return HttpResponse(json.dumps(failed), content_type="application/json")
+        
+        try:
+            request.user.create_project(project_name)
+        except ValueError:
+            failed["error_message"] = "Could not create project at the moment try later."
+            failed["status_code"] = 500
+            return HttpResponse(json.dumps(failed), content_type="application/json")
+        
+        url = "/{}/{}".format(request.user.id, project_name)
+        return HttpResponse( 
+            json.dumps({"statusCode":200, "url":url}), 
+            content_type="application/json"
+        )
 
-    if Project.objects.filter(owner=request.user, name=project_name).exists():
-        context["error_message"] = "You already have a project with that name!"
-        return render(request, 'editor/index.html', context)
-
-    try:
-        request.user.create_project(project_name)
-    except ValueError:
-        context["error_message"] = "Project name is invalid"
-        return render(request, 'editor/index.html', context)
-
-    # Should go to editor view
-    context["success_message"] = "Project created"
-    return render(request, 'editor/index.html', context)
-
-    context["error_message"] = "Unknown error ocurred, please try later."
-    return render(request, 'editor/index.html', context)
+    return HttpResponse(json.dumps(failed), content_type="application/json")
+    

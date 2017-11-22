@@ -37,3 +37,7 @@
 body {
  background:  #eeeeee;
 }
+
+.none-display {
+    display: none;
+}
