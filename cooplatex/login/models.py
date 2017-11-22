@@ -32,6 +32,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
                 raise ValueError
 
             Project(name=project_name, owner=self, main_file="{}-{}-main.tex".format(self.id, project_name)).save()
+            return
 
         raise ValueError
 
