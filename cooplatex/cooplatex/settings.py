@@ -139,3 +139,10 @@ EMAIL_HOST = 'smtp-mail.outlook.com'
 EMAIL_HOST_USER = 'cooplatex@outlook.com'
 EMAIL_HOST_PASSWORD = os.environ['EMAIL_PASS']
 EMAIL_PORT = 587
+
+# Amazon S3 configuration
+# DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+# AWS_ACCESS_KEY_ID = os.environ["AWS_AKID"]
+# AWS_SECRET_ACCESS_KEY = os.environ["AWS_SECRET_KEY"]
+# AWS_STORAGE_BUECKET_NAME = os.environ["BUCKET_NAME"]
+# AWS_REGION_NAME = os.environ["AWS_DEFAULT_REGION"]

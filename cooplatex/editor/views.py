@@ -6,6 +6,7 @@ from django.contrib.auth import logout
 from django.utils import timezone
 from .forms import ProjectCreateForm
 from .models import Project
+from .s3store import create_empty_file
 
 @login_required(login_url='/home/signin/')
 def index(request):
@@ -49,14 +50,24 @@ def create_porject(request, context):
         return render(request, 'editor/index.html', context)
 
     try:
-        request.user.create_project(project_name)
+        request.user.create_project(project_name)        
     except ValueError:
         context["error_message"] = "Project name is invalid"
+        return render(request, 'editor/index.html', context)
+    try:
+        project = Project.objects.get(owner=request.user, name=project_name)
+        # Create file here
+        resp = create_empty_file(project.main_file, project_name, request.user.name)
+        print(resp)
+    except Exception as e:
+        print(e)
+        context["error_message"] = "Project creation failed"
         return render(request, 'editor/index.html', context)
 
     # Should go to editor view
     context["success_message"] = "Project created"
     return render(request, 'editor/index.html', context)
 
-    context["error_message"] = "Unknown error ocurred, please try later."
-    return render(request, 'editor/index.html', context)
+def delete_porject(name, owner):
+    """delete project"""
+    pass
