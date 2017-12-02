@@ -27,7 +27,7 @@ SECRET_KEY = os.environ['SECRET_KEY']
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['cooplatex-env.uwcy6zmmai.eu-west-2.elasticbeanstalk.com']
 AUTH_USER_MODEL = 'login.CustomUser'
 
 # Application definition
@@ -82,17 +82,28 @@ WSGI_APPLICATION = 'cooplatex.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/1.11/ref/settings/#databases
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.environ['DB_NAME'],
-        'HOST': os.environ['POSTGRES_HOST'],
-        'PORT': os.environ['POSTGRES_PORT'],
-        'USER': os.environ['POSTGRES_USER'],
-        'PASSWORD': os.environ['POSTGRES_PASSWORD'],
+if 'RDS_HOSTNAME' in os.environ:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql_psycopg2',
+            'NAME': os.environ['RDS_DB_NAME'],
+            'USER': os.environ['RDS_USERNAME'],
+            'PASSWORD': os.environ['RDS_PASSWORD'],
+            'HOST': os.environ['RDS_HOSTNAME'],
+            'PORT': os.environ['RDS_PORT'],
+        }
     }
-}
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': os.environ['DB_NAME'],
+            'HOST': os.environ['POSTGRES_HOST'],
+            'PORT': os.environ['POSTGRES_PORT'],
+            'USER': os.environ['POSTGRES_USER'],
+            'PASSWORD': os.environ['POSTGRES_PASSWORD'],
+        }
+    }
 
 
 # Password validation
