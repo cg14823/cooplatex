@@ -37,10 +37,11 @@ def login_handler(request):
         user = authenticate(request, username=email, password=password) 
         if user is not None:
             # TODO: user verified check here
-            login(request, user)
-            request.session["user"] = email
-            return redirect("/dash/")
-
+            if user.verified:
+                login(request, user)
+                request.session["user"] = email
+                return redirect("/dash/")
+            return redirect('/home/pleaseverify/')
         error_message = 'Invalid login!'
 
     return render(request, 'login/signin.html', {'form': form, 'error_message':error_message})
@@ -103,7 +104,7 @@ def make_user(name, email, password, request):
         [email],
         
     )
-    return render(request, 'login/register.html', {'done':True})
+    return redirect('/home/pleaseverify/')
 
 def verifyUser(request, userID, verifyToken):
     if request.method == 'GET':
@@ -111,6 +112,14 @@ def verifyUser(request, userID, verifyToken):
             user = CustomUser.objects.get(id=userID)
         except CustomUser.DoesNotExist:
             return HttpResponseNotFound('<h1>404<h1>')
+
         if user.verify(verifyToken):
             return render(request, 'login/success.html')
     return HttpResponseNotFound('<h1>Invalid verification link<h1>')
+
+def pleaseVerify(request):
+    print('HELLO1')
+    if request.method == 'GET':   
+        print('HELLO')
+        return render(request, 'login/pleaseverify.html')
+    return HttpResponseNotFound()
