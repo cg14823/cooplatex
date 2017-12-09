@@ -21,7 +21,7 @@
  */
 
 .linedwrap {
-	border: 1px solid #838383;
+	border: 1px solid #ffffff;
 	padding: 3px;
 	width: 100% !important;
 }
@@ -38,6 +38,7 @@
 }
 
 .linedtextarea textarea {
+	outline: none;
 	padding-right:0.3em;
 	padding-top:0.3em;
 	border: 0;
@@ -49,7 +50,7 @@
 	width: 50px;
 	float: left;
 	overflow: hidden;
-	border-right: 1px solid #838383;
+	border-right: 1px solid #ffffff;
 	margin-right: 5px;
 }
 
