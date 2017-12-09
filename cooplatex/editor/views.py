@@ -121,7 +121,6 @@ def compile_project(request, ownerID, projectName):
                 json_return_ok["link"] = url
                 json_return_ok["error_message"] = "Unable to display content"
                 json_return_ok["status"] = 200
-                print("returning httpresponse with url:", url)
                 return HttpResponse(status=200, content=json.dumps(json_return_ok), content_type='application/json')
 
     error = {"error": "did not compile successfully"}
