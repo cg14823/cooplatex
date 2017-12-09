@@ -11,14 +11,12 @@ def compile_1_tex_file(ownerID, projectName):
     if (not 'COMPILER_HOST' in os.environ) or (not 'COMPILER_SECRET_KEY' in os.environ):
         return False, ""
     
-    reqUrl = os.environ['COMPILER_HOST']+"/compile/"
+    reqUrl = os.environ['COMPILER_HOST']+"/compile"
     payload = json.dumps({"uid":ownerID, "projectName":projectName})
     headers ={"X-Compiler-Token":str(os.environ['COMPILER_SECRET_KEY'])}
-    res = requests.post(reqUrl, headers=headers, payload=payload)
-    print(res)
-    print(res.status_code)
+    res = requests.post(reqUrl, headers=headers, data=payload)
     json_data = json.loads(res.text)
-    print(json_data)
+
     if res.status_code == 200:
         return True, json_data['FileName']
     else:
