@@ -23,6 +23,9 @@ class Project(models.Model):
     def __str__(self):
         return "Name: {} Owner: <{}> Creation Date: {}".format(self.name, self.owner, self.date_created)
     
+    def get_files(self):
+        return Files.objects.filter(project=self)
+
     def add_collaborator(self, user_to_add, user_adding):
         """ Add collaborators to the project
         Returns Permisiondenied if user_adding is not owner

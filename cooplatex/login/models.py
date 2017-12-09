@@ -25,6 +25,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         May raise Value error if project_name is invalid, it may raise
         IntegrityError if project/owner already exist"""
         # TODO: probably create the main file automaticaly
+        # TODO: remove 3 character minimum limit on project name (also in corresponding form)
         # First check that project name is valid
         if (re.match(r'^[a-zA-Z][0-9a-zA-Z_]+$', project_name) and len(project_name) > 3 
             and len(project_name) <= 25):
