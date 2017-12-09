@@ -14,10 +14,10 @@
   margin-top: 50px;
 }
 
-.no-porjects-card {
+.no-projects-card {
     padding-top: 10px;
     padding-bottom: 10px;
-    background: #74c2e6b7;
+    background-color: lightblue;
 }
 
 .table-box {
