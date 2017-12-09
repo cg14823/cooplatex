@@ -1,12 +1,13 @@
 """Editor app views"""
 from django.shortcuts import render, redirect
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponseBadRequest, HttpResponse, HttpResponseForbidden, HttpResponseNotFound
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import logout
 from django.utils import timezone
 from .forms import ProjectCreateForm
 from .models import Project
 from .s3store import create_empty_file
+import json
 
 @login_required(login_url='/home/signin/')
 def index(request):
@@ -68,6 +69,19 @@ def create_porject(request, context):
     context["success_message"] = "Project created"
     return render(request, 'editor/index.html', context)
 
-def delete_porject(name, owner):
+def delete_project(request, ownerID, projectName):
     """delete project"""
-    pass
+    if request.method == 'POST':
+        if request.user.is_authenticated:
+            try:
+                p = Project.objects.get(owner= request.user.id, name=projectName)
+                p.delete()
+                deletedproject = "{}-{}".format(ownerID, projectName)
+                responseDict = {"projectDeleted":deletedproject}
+                return HttpResponse(status=200, content=json.dumps(responseDict), content_type='application/json')
+            except Project.DoesNotExist:
+                return HttpResponseNotFound()
+
+        return HttpResponseForbidden()
+
+    return HttpResponseBadRequest()
