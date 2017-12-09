@@ -67,7 +67,7 @@ def create_porject(request, context):
 
     # Should go to editor view
     context["success_message"] = "Project created"
-    return render(request, 'editor/index.html', context)
+    return HttpResponseRedirect('/dash')
 
 def delete_project(request, ownerID, projectName):
     """delete project"""
