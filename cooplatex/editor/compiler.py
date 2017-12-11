@@ -12,13 +12,13 @@ def compile_1_tex_file(ownerID, projectName):
         return False, ""
     
     reqUrl = os.environ['COMPILER_HOST']+"/compile"
-    payload = json.dumps({"uid":ownerID, "projectName":projectName})
-    headers ={"X-Compiler-Token":str(os.environ['COMPILER_SECRET_KEY'])}
+    payload = json.dumps({"uid":str(ownerID), "projectName":projectName})
+    headers ={"X-Compiler-Token":str(os.environ['COMPILER_SECRET_KEY']), 'Content-type': 'application/json'}
     res = requests.post(reqUrl, headers=headers, data=payload)
-    json_data = json.loads(res.text)
-
+    
     if res.status_code == 200:
-        return True, json_data['FileName']
+        json_data= json.loads(res.text)
+        return True, json_data['Filename']
     else:
         return False ,{"status": res.status_code}
     
