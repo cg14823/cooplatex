@@ -31,6 +31,11 @@ def create_empty_file(file_name, project_name, owner_name):
     s3 = boto3.resource('s3')
     return s3.Bucket(os.environ["BUCKET_NAME"]).put_object(Key=file_name, Body=towrite.encode())
 
+def create_actual_empty_file(file_name):
+    """create_actual_empty_file creates a new bib/tex that is actually empty"""    
+    s3 = boto3.resource('s3')
+    return s3.Bucket(os.environ["BUCKET_NAME"]).put_object(Key=file_name)
+
 def get_files(project_name, owner_ID):
     s3 = boto3.resource('s3')
     main_tex_key = "{}-{}-main.tex".format(owner_ID, project_name)

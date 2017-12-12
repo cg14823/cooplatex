@@ -9,6 +9,7 @@ from django.core.mail import send_mail
 from django.http import HttpResponseNotFound
 from .forms import RegisterForm, SignInForm
 from .models import CustomUser
+import os
 
 def index(request):
     """GET homepage"""
@@ -99,7 +100,7 @@ def make_user(name, email, password, request):
     # TODO: don't hard code url
     send_mail(
         'CoopLaTeX: verification email',
-        'Here is your verification link: http://localhost:8000/home/verify/{}/{}'.format(user.id, user.verify_token),
+        'Here is your verification link: {}/home/verify/{}/{}'.format(os.environ['ROOTHOST'],user.id, user.verify_token),
         'cooplatex@outlook.com',
         [email],
         

@@ -1,4 +1,5 @@
 """Models for editor app"""
+import re
 from django.db import models, IntegrityError
 from django.utils import timezone
 from django.conf import settings
@@ -62,7 +63,21 @@ class Project(models.Model):
             return True
 
         return False
-            
+    
+    def create_new_file(self, new_file_name):
+            """ creates a new file."""
+            if (re.match(r'^[a-zA-Z][0-9a-zA-Z_]+[.](?:tex|bib)+$', new_file_name) is not None and len(new_file_name) > 3 
+                and len(new_file_name) <= 25):
+                if Files.objects.filter(project=self, file_name=new_file_name).exists():
+                    raise ValueError
+                pre,suff = new_file_name.split(".")
+
+                url = "{}-{}-{}".format(self.owner.id, self.name, new_file_name)
+                Files(project=self,url=url, file_name=new_file_name, file_type=suff).save()
+                return url
+
+            raise ValueError
+
     class Meta:
         unique_together = (('name', 'owner'))
 
@@ -98,6 +113,7 @@ class Files(models.Model):
 def create_main_file(sender, instance, created, **kwargs):
     """ Creates main file in database """
     if created:
-        filename = "{}-{}-main.tex".format(instance.owner.id, instance.name)
-        f = Files.objects.get_or_create(project=instance, url=filename, file_name=filename,
+        fileurl = "{}-{}-main.tex".format(instance.owner.id, instance.name)
+        filename = "main.tex"
+        f = Files.objects.get_or_create(project=instance, url=fileurl, file_name=filename,
         file_type="tex")
