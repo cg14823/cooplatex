@@ -58,7 +58,7 @@
         <nav class="navbar navbar-editing navbar-fixed-top">
             <div class="btn-toolbar" role="toolbar" aria-label="Toolbar with button groups">
                 <div class="btn-group" role="group" aria-albel="Upload download">
-                    <button type="button" class="btn">New file</button>
+                    <button type="button" class="btn" data-toggle="modal" data-target="#newFileModal">New file</button>
                     <button type="button" class="btn">Upload file</button>
                     <button type="button" class="btn">Download source</button>
                     <button type="button" class="btn">Download pdf</button>
@@ -78,15 +78,60 @@
         </nav>
 
         <div id="container1" class="panel-container">
-            <!-- TODO: add file view -->
+            <div id="sidebar" class="panel-file-view">                
+                <ul class="list-group" id="files">
+                    <li href="#" class="list-group-item active">main.tex</li>
+                </ul>
+            </div>            
+            <div class="splitter-files"></div>
             <div id="resizable" class="panel-left">
                 <textarea id="linedtext">{{mainBody}}</textarea>
-
             </div>            
             <div id="container2" class="panel-right">
                 Press compile to view pdf!
             </div>
         </div>
         
+        <div class="modal" id="newFileModal" tabindex="-1" role="dialog" aria-labelledby="newFileModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Name your new tex or bib file</h5>
+                        <button type="button" class="close" data-dismiss="modal" id="modal-close-button" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div id="newFileError" style="display: none">
+                            <div class="alert alert-danger show" role="alert">
+                                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                                Invalid filename
+                            </div>
+                        </div>
+                        <form
+                        class="form-inline"
+                        method="post" id ="new-file-form">
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <div class= "col-sm-3">
+                                <label for="file-name-input" class="form-control-label">Filename: </label>
+                            </div>
+                            <!--{{newFileForm.file_name}}-->
+                            <div class="col-sm-9">
+                                <input id="file-name-input" class="form-control mb-2 mr-sm-2 mb-sm-0" type="text" name="file-name-input">
+                            </div>
+                        </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                        <button type="submit" form="new-file-form" class="btn btn-primary">Create new file</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     </body>
 </html>

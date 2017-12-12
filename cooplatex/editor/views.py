@@ -11,7 +11,7 @@ from .forms import ProjectCreateForm
 from .models import Project
 from .s3store import create_empty_file, get_files, save_file, get_pdf
 from .compiler import compile_1_tex_file
-from .s3store import create_empty_file
+from .s3store import create_empty_file, create_actual_empty_file
 import json
 
 @login_required(login_url='/home/signin/')
@@ -72,6 +72,31 @@ def create_project(request, context):
     context["success_message"] = "Project created"
     return HttpResponseRedirect('/dash')
 
+def create_new_file(request, ownerID, projectName): 
+    """creates a new file within a project"""
+    if request.method == 'POST':
+        newFileName = request.POST.get('filename')
+        if request.user.is_authenticated and newFileName != None:
+            try:
+                try: 
+                    p = Project.objects.get(owner=request.user.id, name=projectName)
+                except Project.DoesNotExist:
+                    return HttpResponseNotFound()
+                p.create_new_file(newFileName)
+                url = "{}-{}-{}".format(ownerID, projectName, newFileName)
+                response = create_actual_empty_file(url)
+                if response != None:
+                    json_return_ok = {}
+                    json_return_ok["ok"] = "file created successfully"
+                    json_return_ok["status"] = 200
+                    json_return_ok["newfilename"] = newFileName
+                    return HttpResponse(status=200, content=json.dumps(json_return_ok), content_type='application/json')
+            except ValueError:
+                error = {"error": "Invalid filename"}
+                return HttpResponse(status=422, content=json.dumps(error), content_type='application/json')
+    error = {"error": "did not save successfully"}
+    return HttpResponse(status=400, content=json.dumps(error), content_type='application/json')
+
 @login_required(login_url='/home/signin/')
 def editor_page(request, ownerID, projectName):
     if request.method == 'GET':
@@ -86,7 +111,8 @@ def editor_page(request, ownerID, projectName):
         context = {
             'owner': ownerID,
             'projectName': projectName,
-            'mainBody': main_tex_body, 
+            'mainBody': main_tex_body,
+            #'newFileForm': NewFileForm(),
         }
         return render(request, 'editor/editorpage.html', context)
 
@@ -109,12 +135,9 @@ def compile_project(request, ownerID, projectName):
     if request.method == 'POST':
         if request.user.is_authenticated:
             success, fileKey = compile_1_tex_file(ownerID, projectName)
-
             if not success:
                 error = {"error": "did not compile successfully"}
                 return HttpResponse(status=400, content=json.dumps(error), content_type='application/json')
-            
-
             url = get_pdf(fileKey)
             if url != None:
                 json_return_ok = {}

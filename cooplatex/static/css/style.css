@@ -82,6 +82,24 @@ body {
     min-height: 100%;
     cursor: col-resize;  
   }
+
+  .panel-file-view {
+    background: #8d8d8d;
+    min-width: 140px;
+    transition: all 0.3s;
+  }
+
+  .panel-file-view.active {
+      margin-left: -140px;
+  }
+
+  .splitter-files {
+    flex: 0 0 auto;
+    width: 10px;
+    background: center center no-repeat #03dffc;
+    min-height: 100%;
+    cursor: col-resize;
+  }
   
   .panel-right {
     flex: 1 1 auto;
@@ -97,3 +115,4 @@ body {
     height: 100%;
     resize: none;
   }
+
