@@ -1,6 +1,6 @@
 $(".panel-left").resizable({
     handleSelector: ".splitter",
-    resizeHeight: false,
+    resizeHeight: false
 });
 
 $( document ).ready(
@@ -11,11 +11,11 @@ $( document ).ready(
             if ("insert"=== e.action){
                 insertCounter ++;
                 if (insertCounter % insertCadence === 0){
-                    saveSource()
+                    saveSource()                
                 }
             }
         });
-        
+
         $(".splitter-files").click(function (){
             $(".panel-file-view").toggleClass('active');
         });
@@ -25,10 +25,10 @@ $( document ).ready(
             console.log("submit clicked");
             newFile();
         });
-        
+
         $("#newFileModal").on("hidden.bs.modal", function(event){
             $("#newFileError").css("display", "none");
-            $("#file-name-input").val("");            
+            $("#file-name-input").val("");
         });
     }
 );
@@ -36,7 +36,7 @@ $( document ).ready(
 function newFile() {
     $("#newFileError").css("display", "none");
     console.log("got to newfile");
-    var newfilename = $("#file-name-input").val();
+    var newfilename = $("#filename-input").val();
     console.log(newfilename);
     var csrftoken = getCookie('csrftoken');
     $.ajax({
@@ -146,4 +146,3 @@ function getCookie(name) {
 var csrftoken = getCookie('csrftoken');
 
 var pdfTemplate = '<object data="%LINK_HERE%" type="application/pdf" width="100%" height="100%"> <iframe src="%LINK_HERE%" width="100%" height="100%" style="border: none;">This browser does not support PDFs. Please download the PDF to view it: <a href="%LINK_HERE%">Download PDF</a></iframe></object>'
-var newFileTemplate = '<li href="#" class="list-group-item">%FILE_NAME_PLACEHOLDER%</li>'
