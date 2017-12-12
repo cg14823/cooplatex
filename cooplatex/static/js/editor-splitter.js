@@ -5,13 +5,13 @@ $(".panel-left").resizable({
 
 $( document ).ready(
     function(){
-        var newlineCounter = 9;
-        $("#linedtext").keydown(function(event){
-            if(event.which == 13) {
-                newlineCounter += 1;
-                if(newlineCounter == 10) {
-                    saveSource();
-                    newlineCounter = 0;
+        var insertCounter = 0;
+        var insertCadence = 50;
+        editor.getSession().on('change', function(e){
+            if ("insert"=== e.action){
+                insertCounter ++;
+                if (insertCounter % insertCadence === 0){
+                    saveSource()
                 }
             }
         });
@@ -73,7 +73,6 @@ function newFileFailure (response) {
 
 function compile () {
     var csrftoken = getCookie('csrftoken');
-    console.log(csrftoken)
     $.ajax({
         type:"POST",
         url: "compile/",
@@ -104,8 +103,8 @@ function compileSuccess(response){
         $("#container2").append(response.error_message);
     }
 }
-function saveSource() {
-    var text = $("#linedtext").val();
+function saveSource(done=success, fail=errorF) {
+    var text = editor.getValue();
     var csrftoken = getCookie('csrftoken');
     console.log(csrftoken)
     $.ajax({
@@ -115,16 +114,16 @@ function saveSource() {
         headers: {"X-CSRFToken": csrftoken},
         dataType: 'json'
     })
-    .done(success)
-    .fail(errorF);
+    .done(done)
+    .fail(fail);
 }
 
 function success (response){
-    console.log("hey");
+    console.log("Saved");
 }
 
 function errorF(errorResponse){
-    console.log("fuck");
+    console.log("Not saved");
 }
 
 // using jQuery
@@ -143,6 +142,7 @@ function getCookie(name) {
     }
     return cookieValue;
 }
+
 var csrftoken = getCookie('csrftoken');
 
 var pdfTemplate = '<object data="%LINK_HERE%" type="application/pdf" width="100%" height="100%"> <iframe src="%LINK_HERE%" width="100%" height="100%" style="border: none;">This browser does not support PDFs. Please download the PDF to view it: <a href="%LINK_HERE%">Download PDF</a></iframe></object>'
