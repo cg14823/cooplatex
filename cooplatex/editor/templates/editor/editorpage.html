@@ -6,29 +6,24 @@
         <link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap.min.css' %}" />
         <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}"/>
         <link rel="stylesheet" type="text/css" href="{% static 'css/octicons.min.css' %}" media="screen" title="no title"/>
-        <link rel="stylesheet" type="text/css" href="{% static 'css/jquery-linedtextarea.css' %}"/>
-        <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+        <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">    
         <script type="text/javascript" src="{% static 'js/jquery-3.2.1.min.js' %}"></script>
         <script type="text/javascript" src="{% static 'js/popper.js' %}"></script>
         <script type="text/javascript" src="{% static 'js/bootstrap.min.js' %}"></script>
         <script type="text/javascript" src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
         <script type="text/javascript" src="{% static 'js/editor-splitter.js' %}"></script>
-        <script type="text/javascript" src="{% static 'js/jquery-linedtextarea.js' %}"></script>
-        <script type="text/javascript">
-            $( function() {
-                $( "#resizable" ).resizable({
-                    minHeight: $("#container1").height(),
-                    maxHeight: $("#container1").height()
-                });
-            });
-        </script>
-        <script type="text/javascript">
-            $( function() {
-                $( "#linedtext" ).linedtextarea();
-            });
-        </script>
+
+        <style type="text/css" media="screen">
+            #editor { 
+                position: absolute;
+                top: 0;
+                right: 0;
+                bottom: 0;
+                left: 0;
+            }
+        </style>
     </head>
-    <body>
+    <body>           
         <nav class="navbar navbar-light bg-light fixed-top">
             <a class="navbar-brand" href="{% url 'login:index' %}">
                 <span class="coopLatex">
@@ -85,12 +80,35 @@
             </div>            
             <div class="splitter-files"></div>
             <div id="resizable" class="panel-left">
-                <textarea id="linedtext">{{mainBody}}</textarea>
+                <pre><div id="editor">{{mainBody}}</div></pre>
             </div>            
             <div id="container2" class="panel-right">
                 Press compile to view pdf!
             </div>
-        </div>
+        </div>  
+
+        <script src="{% static 'ace-builds-master/src-min-noconflict/ace.js' %}" type="text/javascript" charset="utf-8"></script>
+        <script src="{% static 'ace-builds-master/src-min-noconflict/ext-language_tools.js' %}" type="text/javascript" charset="utf-8"></script>
+        <script>
+            ace.require("ace/ext/language_tools");
+            var editor = ace.edit("editor");
+            editor.setTheme("ace/theme/chrome");
+            editor.getSession().setMode("ace/mode/tex");
+            editor.setOptions({
+                enableBasicAutocompletion: true,
+                enableSnippets: true,
+                enableLiveAutocompletion: true
+            });
+            document.getElementById('editor').style.fontSize='18px';
+            $( function() {
+                $( "#resizable" ).resizable({
+                    minHeight: $("#container1").height(),
+                    maxHeight: $("#container1").height(),
+                    stop: function (event, ui) {editor.resize();}
+                });
+            });
+
+        </script>
         
         <div class="modal" id="newFileModal" tabindex="-1" role="dialog" aria-labelledby="newFileModalLabel" aria-hidden="true">
             <div class="modal-dialog" role="document">
