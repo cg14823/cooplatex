@@ -110,6 +110,7 @@ function newFileFailure (response) {
 }
 
 function compile () {
+    $("#loader").css('display', 'block');
     var csrftoken = getCookie('csrftoken');
     $.ajax({
         type:"POST",
@@ -124,6 +125,7 @@ function compile () {
 
 function compileSuccess(response){
     if (response.status == 200) {
+        $("#loader").css('display', 'none');        
         $("#container2").empty();
         if (response.link != ""){
             templatePdf = pdfTemplate.replace("%LINK_HERE%", response.link);
@@ -161,6 +163,7 @@ function success (response){
 }
 
 function errorF(errorResponse){
+    $("#loader").css('display', 'none');   
     console.log("Not saved");
 }
 
