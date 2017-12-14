@@ -75,12 +75,18 @@
         <div id="container1" class="panel-container">
             <div id="sidebar" class="panel-file-view">                
                 <ul class="list-group" id="files">
-                    <li href="#" class="list-group-item active">main.tex</li>
+                    <li id="{{mainfile.name_id}}" class="currentfile list-group-item" onclick='toggleFiles("{{mainfile.name_id}}")'>{{mainfile.name}}</li><span style="display:none" id="{{mainfile.name_id}}-body" name="{{mainfile.name}}">{{mainfile.body}}</span>
+                    {% for f in editable_files %}
+                        <li id="{{f.name_id}}" class="unselectedfile list-group-item" onclick='toggleFiles("{{f.name_id}}")'>{{f.name}}</li><span style="display:none" name="{{f.name}}" id="{{f.name_id}}-body">{{f.body}}</span>
+                    {% endfor %}
+                    {% for f in images %}
+                        <li id="{{f.name_id}}-other" class="unselectedfile list-group-item" onclick='toggleOtherFiles("{{f.name_id}}")'>{{f.name}}</li>
+                    {% endfor %}
                 </ul>
             </div>            
             <div class="splitter-files"></div>
             <div id="resizable" class="panel-left">
-                <pre><div id="editor">{{mainBody}}</div></pre>
+                <pre><div id="editor">{{mainfile.body}}</div></pre>   
             </div>            
             <div id="container2" class="panel-right">
                 Press compile to view pdf!
@@ -97,8 +103,10 @@
             editor.setOptions({
                 enableBasicAutocompletion: true,
                 enableSnippets: true,
-                enableLiveAutocompletion: true
+                enableLiveAutocompletion: true,
+                wrapBehavioursEnabled: true
             });
+            editor.$blockScrolling = Infinity 
             document.getElementById('editor').style.fontSize='12px';
             $( function() {
                 $( "#resizable" ).resizable({

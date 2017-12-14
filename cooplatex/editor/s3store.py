@@ -36,14 +36,15 @@ def create_actual_empty_file(file_name):
     s3 = boto3.resource('s3')
     return s3.Bucket(os.environ["BUCKET_NAME"]).put_object(Key=file_name)
 
-def get_files(project_name, owner_ID):
+def get_file(file_key):
     s3 = boto3.resource('s3')
-    main_tex_key = "{}-{}-main.tex".format(owner_ID, project_name)
     f_uuid = uuid.uuid4()
     f_uuid = str(f_uuid)
+
     with open(f_uuid, "wb") as f:
-        s3.Bucket(os.environ["BUCKET_NAME"]).download_fileobj(main_tex_key, f)
+        s3.Bucket(os.environ["BUCKET_NAME"]).download_fileobj(file_key, f)
         f.close()
+
     f = open(f_uuid, "r")
     data = f.read()
     f.close()
