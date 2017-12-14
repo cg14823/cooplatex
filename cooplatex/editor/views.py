@@ -128,7 +128,7 @@ def editor_page(request, ownerID, projectName):
                             tempobj['body'] = get_file(f.url)
                             editable.append(tempobj)
                     else:
-                        other.append(f.url)
+                        other.append({'name': f.file_name, 'url':f.url, 'name_id':f.file_name.replace( ".", "")})
                 
             context = {
                 'owner': ownerID,
@@ -152,9 +152,12 @@ def save_project(request, ownerID, projectName):
         body_unicode = request.body.decode('utf-8')
         body = json.loads(body_unicode)
         filesNotSaved = []
+        print("HEREEE")
         if request.user.is_authenticated and body != None:
             try:
+                print("HEREEE")
                 project = Project.objects.get(owner=request.user.id, name=projectName)
+                print("HEREEE")
                 for key, value in body.items():
                     if value['name'] != None:
                         try:
@@ -169,13 +172,7 @@ def save_project(request, ownerID, projectName):
                 print(e)
                 return HttpResponseNotFound()
             
-
-            # filename = "{}-{}-main.tex".format(ownerID, projectName)
-            # response = save_file(filename, data)
-            # print(response)
-            # if response != None:
-            #     json_return_ok = {"ok": "save successful"}
-            return HttpResponse(status=200, content=json.dumps({}), content_type='application/json')   
+        return HttpResponse(status=400, content=json.dumps({}), content_type='application/json')   
     
     error = {"error": "did not save successfully"}
     return HttpResponse(status=400, content=json.dumps(error), content_type='application/json')

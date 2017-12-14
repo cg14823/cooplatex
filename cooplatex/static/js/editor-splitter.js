@@ -38,7 +38,7 @@ $( document ).ready(
         });
 
         $("#files li").each(function(idx, el){
-            if (el.id.indexOf("-img") === -1){
+            if (el.id.indexOf("-other") === -1){
                 filesBody[el.id] = {body: $("#"+el.id+"-body").text(),  name:$("#"+el.id+"-body").attr('name')}
             }
         })
@@ -183,8 +183,12 @@ function uploadFile(){
         headers: {"X-CSRFToken": csrftoken},
         dataType: 'json'
     })
-    .done(function () {alert("file upload worked");})
-    .fail(function () {alert("File uplaod fail");});
+    .done(fileAdded)
+    .fail(errorF);
+}
+
+function fileAdded(response){
+    $.jGrowl("File added!", {life:1000, theme:'manilla', position:'top-left'});
 }
 // using jQuery
 function getCookie(name) {
@@ -269,7 +273,7 @@ window.downloadFile = function (sUrl) {
         // Force file download (whether supported by server).
         if (sUrl.indexOf('?') === -1) {
             sUrl += '?download';
-        }
+        }file_name
     
         window.open(sUrl, '_blank');
         return true;
