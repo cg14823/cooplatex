@@ -133,6 +133,7 @@ function compileSuccess(response){
             templatePdf = templatePdf.replace("%LINK_HERE%", response.link);
             $("#container2").empty();
             $("#container2").append(templatePdf);
+            $("#container2").append('<div id="loader"></div>');
         }
         else{
             // there was probably an error
@@ -260,4 +261,3 @@ window.downloadFile = function (sUrl) {
     window.downloadFile.isChrome = navigator.userAgent.toLowerCase().indexOf('chrome') > -1;
     window.downloadFile.isSafari = navigator.userAgent.toLowerCase().indexOf('safari') > -1;
 
->>>>>>> master

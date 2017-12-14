@@ -96,7 +96,7 @@ body {
   .splitter-files {
     flex: 0 0 auto;
     width: 10px;
-    background: center center no-repeat #03dffc;
+    background: center center no-repeat #000000;
     min-height: 100%;
     cursor: col-resize;
   }
