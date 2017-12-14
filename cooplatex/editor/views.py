@@ -166,3 +166,25 @@ def delete_project(request, ownerID, projectName):
 
     return HttpResponseBadRequest()
 
+
+@login_required(login_url='/home/signin/')
+def download_pdf(request, ownerID, projectName):
+    if request.method == 'POST':
+        if request.user.is_authenticated:
+            try:
+                p = Project.objects.get(owner= request.user.id, name=projectName)
+                if p.compiled ==  0:
+                    json_return_not_compiled = {'Error': 'The project has not been compiled yet', 'Link': '', 'status': 404}
+                    return HttpResponse(status=404, content=json.dumps(json_return_not_compiled), content_type='application/json')
+                
+                pdf = get_pdf(p.compiled_file)
+                json_return_not_compiled = {'Error': '', 'Link': pdf, 'status':200}
+                return HttpResponse(status=200, content=json.dumps(json_return_not_compiled), content_type='application/json')
+                    
+            except Project.DoesNotExist:
+                json_return_not_compiled = {'Error': 'The project does not exists', 'Link': '', 'status': 404}
+                return HttpResponse(status=404, content=json.dumps(json_return_not_compiled), content_type='application/json')
+                
+            
+        return HttpResponseForbidden()
+    return HttpResponseBadRequest()

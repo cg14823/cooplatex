@@ -20,6 +20,8 @@ class Project(models.Model):
     date_created = models.DateTimeField(default=timezone.now)
     date_modified = models.DateTimeField(default=timezone.now)
     main_file = models.CharField(max_length=100, validators=[VALIDATOR], default="")
+    compiled = models.PositiveIntegerField(default=0)
+    compiled_file= models.CharField(max_length=100, default="")
 
     def __str__(self):
         return "Name: {} Owner: <{}> Creation Date: {}".format(self.name, self.owner, self.date_created)
