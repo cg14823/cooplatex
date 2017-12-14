@@ -6,6 +6,7 @@ var filesBody = {};
 var userChange = true;
 $( document ).ready(
     function(){
+        $("#save-success-alert").hide();
         var insertCounter = 0;
         var insertCadence = 50;
         editor.getSession().on('change', function(e){
@@ -158,10 +159,12 @@ function saveSource(done=success, fail=errorF) {
 
 function success (response){
     console.log("SAVE:", response);
+    $.jGrowl("Project saved!", {life:1000, theme:'manilla', position:'top-left'});
 }
 
 function errorF(errorResponse){
     console.log("Not saved");
+    $.jGrowl("Action failed :(", {life:1000, theme:'error', position:'top-left'});
 }
 
 // using jQuery

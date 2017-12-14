@@ -163,6 +163,8 @@ def save_project(request, ownerID, projectName):
                             save_file(f.url, value['body'])
                         except Exception as e:
                             filesNotSaved.append(value['name'])
+                project.date_modified = timezone.now()
+                project.save()
                 return HttpResponse(status=200, content=json.dumps({'NotSaved': filesNotSaved }), content_type='application/json')
             except Exception as e:
                 print(e)
