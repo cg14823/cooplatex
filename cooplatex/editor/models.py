@@ -10,7 +10,7 @@ from django.dispatch import receiver
 
 
 # TODO: create functions for file creation but they will be dependent on how we store files
-VALIDATOR = RegexValidator(r'^[a-zA-Z][0-9a-zA-Z_]+$',
+VALIDATOR = RegexValidator(r'^[a-zA-Z][0-9a-zA-Z]+$',
     'Must start with a letter and can only contain alphanumeric characters and undeerscores.')
 
 class Project(models.Model):
@@ -70,7 +70,7 @@ class Project(models.Model):
     
     def create_new_file(self, new_file_name):
             """ creates a new file."""
-            if (re.match(r'^[a-zA-Z][0-9a-zA-Z_]+[.](?:tex|bib)+$', new_file_name) is not None and len(new_file_name) > 3 
+            if (re.match(r'^[a-zA-Z][0-9a-zA-Z]+[.](?:tex|bib)+$', new_file_name) is not None and len(new_file_name) > 3 
                 and len(new_file_name) <= 25):
                 if Files.objects.filter(project=self, file_name=new_file_name).exists():
                     raise ValueError
@@ -78,8 +78,24 @@ class Project(models.Model):
 
                 url = "{}-{}-{}".format(self.owner.id, self.name, new_file_name)
                 Files(project=self,url=url, file_name=new_file_name, file_type=suff).save()
+                self.date_modified = timezone.now()
+                self.save()
                 return url
+            elif (re.match(r'^[a-zA-Z][0-9a-zA-Z]+[.][a-zA-Z]+$', new_file_name) is not None and len(new_file_name) > 3 
+                and len(new_file_name) <= 25):
+                if Files.objects.filter(project=self, file_name=new_file_name).exists():
+                    raise ValueError
 
+                extension = new_file_name[new_file_name.rfind(".")+1:]
+                typeF = 'other'
+                if extension in ['png', 'jpeg', 'svg', 'jpg']:
+                    typeF ='img'
+
+                url = "{}-{}-{}".format(self.owner.id, self.name, new_file_name)
+                Files(project=self,url=url, file_name=new_file_name, file_type=typeF).save()
+                self.date_modified = timezone.now()
+                self.save()
+                return url
             raise ValueError
 
     class Meta:

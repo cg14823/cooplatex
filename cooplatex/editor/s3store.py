@@ -51,11 +51,13 @@ def get_file(file_key):
     os.remove(f_uuid)
     return data
 
-def save_file(file_name, data):
+def save_file(file_name, data, dataType='binary/octet-stream', binary=False):
     s3 = boto3.resource('s3')
     print(file_name)
     #print(data)
-    return s3.Bucket(os.environ["BUCKET_NAME"]).put_object(Key=file_name, Body=data.encode())
+    if binary:
+        return s3.Bucket(os.environ["BUCKET_NAME"]).put_object(Key=file_name, Body=data, ContentType=dataType)
+    return s3.Bucket(os.environ["BUCKET_NAME"]).put_object(Key=file_name, Body=data.encode(), ContentType=dataType)
 
 def get_pdf(pdf_key):
     s3 = boto3.client('s3')

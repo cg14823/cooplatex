@@ -145,7 +145,7 @@ function compileSuccess(response){
 function saveSource(done=success, fail=errorF) {
     var text = editor.getValue();
     var csrftoken = getCookie('csrftoken');
-    console.log(csrftoken)
+
     $.ajax({
         type:"POST",
         url: "save/",
@@ -167,6 +167,25 @@ function errorF(errorResponse){
     $.jGrowl("Action failed :(", {life:1000, theme:'error', position:'top-left'});
 }
 
+
+function uploadFile(){
+    var fdata = new FormData();
+    fdata.append("file", document.getElementById('id_file_source').files[0])
+    var csrftoken = getCookie('csrftoken');
+    console.log(fdata);
+    $.ajax({
+        type:"POST",
+        url: "uploadFile/",
+        data: fdata,
+        cache: false,
+        processData: false, // Don't process the files
+        contentType: false,
+        headers: {"X-CSRFToken": csrftoken},
+        dataType: 'json'
+    })
+    .done(function () {alert("file upload worked");})
+    .fail(function () {alert("File uplaod fail");});
+}
 // using jQuery
 function getCookie(name) {
     var cookieValue = null;
