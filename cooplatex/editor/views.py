@@ -9,10 +9,11 @@ from django.core.exceptions import PermissionDenied
 from django.http import HttpResponseForbidden, HttpResponse
 from .forms import ProjectCreateForm
 from .models import Project
-from .s3store import create_empty_file, get_files, save_file, get_pdf
+from .s3store import create_empty_file, get_file, save_file, get_pdf
 from .compiler import compile_1_tex_file
 from .s3store import create_empty_file, create_actual_empty_file
 import json
+import string
 
 @login_required(login_url='/home/signin/')
 def index(request):
@@ -100,33 +101,80 @@ def create_new_file(request, ownerID, projectName):
 @login_required(login_url='/home/signin/')
 def editor_page(request, ownerID, projectName):
     if request.method == 'GET':
+        context={}
         try:
             if request.user.is_authenticated:
                 # look up dajngo reques.user and how to authenticate
-                #p = Project.objects.get(name=projectName)
-                main_tex_body = get_files(projectName, ownerID)
+                p = Project.objects.get(name=projectName, owner=request.user.id)
+                files = p.get_files()
+                main_fileKey = p.main_file
+                mainFileObj = {
+                    'body': "",
+                    'name': "",
+                    'name_id': "",
+                }
+                editable = []
+                other = []
+                for f in files:
+                    if f.file_type == "tex" or f.file_type == "bib":
+                        if f.url == main_fileKey:
+                            mainFileObj['name'] = f.file_name
+                            mainFileObj['name_id'] = f.file_name.replace( ".", "")
+                            mainFileObj['body'] = get_file(f.url)
+                        else:
+                            tempobj ={}
+                            tempobj['name'] = f.file_name
+                            tempobj['name_id'] = f.file_name.replace( ".", "")
+                            tempobj['body'] = get_file(f.url)
+                            editable.append(tempobj)
+                    else:
+                        other.append(f.url)
+                
+            context = {
+                'owner': ownerID,
+                'projectName': projectName,
+                'mainfile': mainFileObj,
+                'editable_files': editable,
+                "images": other,
+                #'newFileForm': NewFileForm(),
+            }
+    
+                # Needs to create a dictionary of all text bodies which will be passed through context
         except Exception as e:
             print(e)
-            return HttpResponseForbidden
-        context = {
-            'owner': ownerID,
-            'projectName': projectName,
-            'mainBody': main_tex_body,
-            #'newFileForm': NewFileForm(),
-        }
+            return HttpResponseForbidden()
+        
         return render(request, 'editor/editorpage.html', context)
 
 def save_project(request, ownerID, projectName):
+    # need to save the currently opened project
     if request.method == 'POST':
-        data = request.POST.get('file')
-        if request.user.is_authenticated and data != None:
-            print(request)
-            filename = "{}-{}-main.tex".format(ownerID, projectName)
-            response = save_file(filename, data)
-            print(response)
-            if response != None:
-                json_return_ok = {"ok": "save successful"}
-                return HttpResponse(status=200, content=json.dumps(json_return_ok), content_type='application/json')   
+        data = request.POST.get('content')
+        body_unicode = request.body.decode('utf-8')
+        body = json.loads(body_unicode)
+        filesNotSaved = []
+        if request.user.is_authenticated and body != None:
+            try:
+                project = Project.objects.get(owner=request.user.id, name=projectName)
+                for key, value in body.items():
+                    if value['name'] != None:
+                        try:
+                            f = project.get_file(value['name'])
+                            save_file(f.url, value['body'])
+                        except Exception as e:
+                            filesNotSaved.append(value['name'])
+                return HttpResponse(status=200, content=json.dumps({'NotSaved': filesNotSaved }), content_type='application/json')
+            except Exception as e:
+                print(e)
+                return HttpResponseNotFound()
+            
+
+            # filename = "{}-{}-main.tex".format(ownerID, projectName)
+            # response = save_file(filename, data)
+            # print(response)
+            # if response != None:
+            #     json_return_ok = {"ok": "save successful"}
+            return HttpResponse(status=200, content=json.dumps({}), content_type='application/json')   
     
     error = {"error": "did not save successfully"}
     return HttpResponse(status=400, content=json.dumps(error), content_type='application/json')

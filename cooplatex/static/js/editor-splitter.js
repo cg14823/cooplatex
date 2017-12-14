@@ -2,12 +2,17 @@ $(".panel-left").resizable({
     handleSelector: ".splitter",
     resizeHeight: false
 });
-
+var filesBody = {};
+var userChange = true;
 $( document ).ready(
     function(){
         var insertCounter = 0;
         var insertCadence = 50;
         editor.getSession().on('change', function(e){
+            if (!userChange) return;
+            console.log("USERCAHNGE");
+            var currentElemt = $("#files").find(".currentfile");
+            filesBody[currentElemt.attr('id')].body = editor.getValue();
             if ("insert"=== e.action){
                 insertCounter ++;
                 if (insertCounter % insertCadence === 0){
@@ -30,13 +35,40 @@ $( document ).ready(
             $("#newFileError").css("display", "none");
             $("#file-name-input").val("");
         });
+
+        $("#files li").each(function(idx, el){
+            if (el.id.indexOf("-img") === -1){
+                filesBody[el.id] = {body: $("#"+el.id+"-body").text(),  name:$("#"+el.id+"-body").attr('name')}
+            }
+        })
+        console.log(filesBody)
     }
 );
+
+function toggleOtherFiles(id){
+    console.log("UNIMPLEMENTED");
+}
+function toggleFiles(id){
+    var currentElemt = $("#files").find(".currentfile")
+    filesBody[currentElemt.attr('id')].body = editor.getValue();
+    console.log("TOGGLE", filesBody)
+    userChange = false;
+    editor.getSession().setValue("",-1)
+
+    $("#files > li").removeClass("currentfile");
+    $("#files > li").removeClass("unselectedfile");
+    var classObject = '#'+id;
+
+    $(classObject).removeClass("unselectedfile");
+    $(classObject).addClass("currentfile");
+    editor.setValue(filesBody[id].body,-1);
+    userChange = true;
+}
 
 function newFile() {
     $("#newFileError").css("display", "none");
     console.log("got to newfile");
-    var newfilename = $("#filename-input").val();
+    var newfilename = $("#file-name-input").val();
     console.log(newfilename);
     var csrftoken = getCookie('csrftoken');
     $.ajax({
@@ -57,9 +89,15 @@ function newFileSuccess (response) {
         $('.modal-backdrop').remove();
         $("#file-name-input").val("");
         // append new file to list on file view
-        templateNewFile = newFileTemplate.replace("%FILE_NAME_PLACEHOLDER%", response.newfilename);
+        fname = response.newfilename.replace(".","");
+        templateNewFile = newFileTemplate.replace("{{f.name_id}}", fname);
+        templateNewFile = templateNewFile.replace("{{f.name_id}}", fname);
+        templateNewFile = templateNewFile.replace("{{f.name_id}}", fname);
+        templateNewFile = templateNewFile.replace("{{f.name}}", response.newfilename);
+        templateNewFile = templateNewFile.replace("{{f.name}}", response.newfilename);
         //console.log("appending: ", templateNewFile);
         $("#files").append(templateNewFile);
+        filesBody[fname] ={name: response.newfilename, body:""};
         // console.log("appended");
     }
 }
@@ -110,7 +148,7 @@ function saveSource(done=success, fail=errorF) {
     $.ajax({
         type:"POST",
         url: "save/",
-        data:{"file":text},
+        data:JSON.stringify(filesBody),
         headers: {"X-CSRFToken": csrftoken},
         dataType: 'json'
     })
@@ -119,7 +157,7 @@ function saveSource(done=success, fail=errorF) {
 }
 
 function success (response){
-    console.log("Saved");
+    console.log("SAVE:", response);
 }
 
 function errorF(errorResponse){
@@ -146,3 +184,4 @@ function getCookie(name) {
 var csrftoken = getCookie('csrftoken');
 
 var pdfTemplate = '<object data="%LINK_HERE%" type="application/pdf" width="100%" height="100%"> <iframe src="%LINK_HERE%" width="100%" height="100%" style="border: none;">This browser does not support PDFs. Please download the PDF to view it: <a href="%LINK_HERE%">Download PDF</a></iframe></object>'
+var newFileTemplate = `<li id="{{f.name_id}}" class="unselectedfile list-group-item" onclick='toggleFiles("{{f.name_id}}")'>{{f.name}}</li><span style="display:none" name="{{f.name}}" id="{{f.name_id}}-body"></span>`

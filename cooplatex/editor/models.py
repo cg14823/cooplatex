@@ -26,6 +26,8 @@ class Project(models.Model):
     
     def get_files(self):
         return Files.objects.filter(project=self)
+    def get_file(self, name):
+        return Files.objects.get(project=self, file_name=name)
 
     def add_collaborator(self, user_to_add, user_adding):
         """ Add collaborators to the project
