@@ -168,6 +168,14 @@
                             </button>
                         </div>
                         <div class="modal-body">
+                            <div id="uploadFileError" style="display: none">
+                                <div class="alert alert-danger show" role="alert">
+                                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                    <span id="uploadErrorMessage">Unkown error occurred</span>
+                                </div>
+                            </div>
                             <form id="UploadForm">
                                     <label for="id_file_source">File source:</label><input type="file" name="file_source" required="" id="id_file_source">
                             </form>

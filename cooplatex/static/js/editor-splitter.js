@@ -36,6 +36,11 @@ $( document ).ready(
             $("#newFileError").css("display", "none");
             $("#file-name-input").val("");
         });
+        $("#uploadFileError").on("hidden.bs.modal", function(event){
+            $("#uploadFileError").css("display", "none");
+            $("#uploadErrorMessage").val("Unkown error occured please try later")
+            $("#id_file_source").val("");
+        });
 
         $("#files li").each(function(idx, el){
             if (el.id.indexOf("-other") === -1){
@@ -192,7 +197,14 @@ function uploadFile(){
         dataType: 'json'
     })
     .done(fileAdded)
-    .fail(errorF);
+    .fail(fileUploadError);
+}
+
+function fileUploadError(jqXHR, textStatus, erroThrown){    
+    if (jqXHR.status == 400) {
+        $("#uploadErrorMessage").val("File name is invalid, Make sure ir start with a letter and conatains no special characters.")
+    }
+    $("#uploadFileError").css("display", "inline");
 }
 
 function fileAdded(response){
