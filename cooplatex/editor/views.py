@@ -7,7 +7,7 @@ from django.contrib.auth import logout
 from django.utils import timezone
 from django.core.exceptions import PermissionDenied
 from django.http import HttpResponseForbidden, HttpResponse
-from .forms import ProjectCreateForm
+from .forms import ProjectCreateForm, FileUploadForm
 from .models import Project
 from .s3store import create_empty_file, get_file, save_file, get_pdf
 from .compiler import compile_1_tex_file
@@ -128,7 +128,7 @@ def editor_page(request, ownerID, projectName):
                             tempobj['body'] = get_file(f.url)
                             editable.append(tempobj)
                     else:
-                        other.append(f.url)
+                        other.append({'name': f.file_name, 'url':f.url, 'name_id':f.file_name.replace( ".", "")})
                 
             context = {
                 'owner': ownerID,
@@ -136,7 +136,6 @@ def editor_page(request, ownerID, projectName):
                 'mainfile': mainFileObj,
                 'editable_files': editable,
                 "images": other,
-                #'newFileForm': NewFileForm(),
             }
     
                 # Needs to create a dictionary of all text bodies which will be passed through context
@@ -153,9 +152,12 @@ def save_project(request, ownerID, projectName):
         body_unicode = request.body.decode('utf-8')
         body = json.loads(body_unicode)
         filesNotSaved = []
+        print("HEREEE")
         if request.user.is_authenticated and body != None:
             try:
+                print("HEREEE")
                 project = Project.objects.get(owner=request.user.id, name=projectName)
+                print("HEREEE")
                 for key, value in body.items():
                     if value['name'] != None:
                         try:
@@ -163,18 +165,14 @@ def save_project(request, ownerID, projectName):
                             save_file(f.url, value['body'])
                         except Exception as e:
                             filesNotSaved.append(value['name'])
+                project.date_modified = timezone.now()
+                project.save()
                 return HttpResponse(status=200, content=json.dumps({'NotSaved': filesNotSaved }), content_type='application/json')
             except Exception as e:
                 print(e)
                 return HttpResponseNotFound()
             
-
-            # filename = "{}-{}-main.tex".format(ownerID, projectName)
-            # response = save_file(filename, data)
-            # print(response)
-            # if response != None:
-            #     json_return_ok = {"ok": "save successful"}
-            return HttpResponse(status=200, content=json.dumps({}), content_type='application/json')   
+        return HttpResponse(status=400, content=json.dumps({}), content_type='application/json')   
     
     error = {"error": "did not save successfully"}
     return HttpResponse(status=400, content=json.dumps(error), content_type='application/json')
@@ -236,3 +234,43 @@ def download_pdf(request, ownerID, projectName):
             
         return HttpResponseForbidden()
     return HttpResponseBadRequest()
+
+
+@login_required(login_url='/home/signin/')
+def upload_file(request, ownerID, projectName):
+    if request.method == 'POST':
+        if request.user.is_authenticated:
+            try:
+                print(request)
+                p = Project.objects.get(owner= request.user.id, name=projectName)
+                #form = FileUploadForm(data=request.POST, files=request.FILES)
+                userFile = request.FILES['file']
+
+                filename = str(userFile)
+                binary = userFile.read()
+
+                try:
+                    url = p.create_new_file(filename)
+                    print(url)
+                    extension = filename[filename.rfind(".")+1:]
+                    dataType='binary/octet-stream'
+                    if extension in ['png', 'jpeg', 'svg', 'jpg']:
+                        dataType ='image/'+extension
+
+                    save_file(url, binary, dataType, True)
+                    json_return_not_compiled = {'Error': '', 'Link': '', 'status': 200}
+                    return HttpResponse(status=200, content=json.dumps(json_return_not_compiled), content_type='application/json')
+
+                except ValueError:
+                    json_return_not_compiled = {'Error': 'File already exists or name is invalid', 'Link': '', 'status': 400}
+                    return HttpResponse(status=400, content=json.dumps(json_return_not_compiled), content_type='application/json')
+            
+                # try:
+                    
+                # except ValueError:
+                #     json_return_not_compiled = {'Error': 'File name is invalid or already exists', 'Link': '', 'status': 400}
+                #     return HttpResponse(status=400, content=json.dumps(json_return_not_compiled), content_type='application/json')
+
+            except Project.DoesNotExist:
+                json_return_not_compiled = {'Error': 'The project does not exists', 'Link': '', 'status': 404}
+                return HttpResponse(status=404, content=json.dumps(json_return_not_compiled), content_type='application/json')

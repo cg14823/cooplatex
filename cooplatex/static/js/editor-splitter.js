@@ -6,6 +6,7 @@ var filesBody = {};
 var userChange = true;
 $( document ).ready(
     function(){
+        $("#save-success-alert").hide();
         var insertCounter = 0;
         var insertCadence = 50;
         editor.getSession().on('change', function(e){
@@ -35,9 +36,14 @@ $( document ).ready(
             $("#newFileError").css("display", "none");
             $("#file-name-input").val("");
         });
+        $("#fileUploadModel").on("hidden.bs.modal", function(event){
+            $("#uploadFileError").css("display", "none");
+            $("#uploadErrorMessage").val("Unkown error occured please try later")
+            $("#id_file_source").val("");
+        });
 
         $("#files li").each(function(idx, el){
-            if (el.id.indexOf("-img") === -1){
+            if (el.id.indexOf("-other") === -1){
                 filesBody[el.id] = {body: $("#"+el.id+"-body").text(),  name:$("#"+el.id+"-body").attr('name')}
             }
         })
@@ -45,8 +51,13 @@ $( document ).ready(
     }
 );
 
+function unimplmented() {
+    alert("Sorry this options are currently unimplmented")
+}
+
 function toggleOtherFiles(id){
     console.log("UNIMPLEMENTED");
+    alert("At the moment you can not preview images")
 }
 function toggleFiles(id){
     var currentElemt = $("#files").find(".currentfile")
@@ -119,7 +130,11 @@ function compile () {
         dataType: 'json'
     })
     .done(compileSuccess)
-    .fail(errorF);
+    .fail(compileFail);
+}
+
+function compileFail(){
+    $.jGrowl("Compilation Failed, Logs not available in this version", {life:1000, theme:'error', position:'top-left'});
 }
 
 function compileSuccess(response){
@@ -144,7 +159,7 @@ function compileSuccess(response){
 function saveSource(done=success, fail=errorF) {
     var text = editor.getValue();
     var csrftoken = getCookie('csrftoken');
-    console.log(csrftoken)
+
     $.ajax({
         type:"POST",
         url: "save/",
@@ -158,12 +173,44 @@ function saveSource(done=success, fail=errorF) {
 
 function success (response){
     console.log("SAVE:", response);
+    $.jGrowl("Project saved!", {life:1000, theme:'manilla', position:'top-left'});
 }
 
 function errorF(errorResponse){
-    console.log("Not saved");
+    $.jGrowl("Action failed :(", {life:1000, theme:'error', position:'top-left'});
 }
 
+
+function uploadFile(){
+    var fdata = new FormData();
+    fdata.append("file", document.getElementById('id_file_source').files[0])
+    var csrftoken = getCookie('csrftoken');
+    $.ajax({
+        type:"POST",
+        url: "uploadFile/",
+        data: fdata,
+        cache: false,
+        processData: false, // Don't process the files
+        contentType: false,
+        headers: {"X-CSRFToken": csrftoken},
+        dataType: 'json'
+    })
+    .done(fileAdded)
+    .fail(fileUploadError);
+}
+
+function fileUploadError(jqXHR, textStatus, erroThrown){
+    console.log("STATUS:",jqXHR.status);  
+    if (jqXHR.status == 400) {
+        $("#uploadErrorMessage").text("File name is invalid, Make sure ir start with a letter and conatains no special characters and is less than 25 characters.")
+    }
+    $("#uploadFileError").css("display", "inline");
+}
+
+function fileAdded(response){
+    $('#fileUploadModel').modal('hide');
+    $.jGrowl("File added!", {life:1000, theme:'manilla', position:'top-left'});
+}
 // using jQuery
 function getCookie(name) {
     var cookieValue = null;

@@ -13,3 +13,6 @@ class ProjectCreateForm(forms.Form):
       'class': 'form-control',
       'placeholder': 'Title'
     }), max_length=25, min_length=3, validators=[VALIDATOR])
+
+class FileUploadForm(forms.Form):
+    file_source = forms.FileField()

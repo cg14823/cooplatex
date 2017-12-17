@@ -113,10 +113,12 @@ body {
   .currentfile {
     background-color: #007bff;
     color: white;
+    font-size: 2vmin;
   }
 
   .unselectedfile {
     background-color: #eee;
+    font-size: 2vmin;
   }
 
   textarea {
@@ -124,3 +126,12 @@ body {
     height: 100%;
     resize: none;
   }
+
+.jGrowl .manilla {
+    background-color: 		rgb(1, 75, 13);
+        color: 					rgb(255, 255, 255);
+}
+.jGrowl .error {
+    background-color: 		rgb(146, 1, 1);
+    color: 					rgb(255, 255, 255);
+}
