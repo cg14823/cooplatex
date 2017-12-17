@@ -262,7 +262,6 @@ def upload_file(request, ownerID, projectName):
                     return HttpResponse(status=200, content=json.dumps(json_return_not_compiled), content_type='application/json')
 
                 except ValueError:
-                    print("FUDGE")
                     json_return_not_compiled = {'Error': 'File already exists or name is invalid', 'Link': '', 'status': 400}
                     return HttpResponse(status=400, content=json.dumps(json_return_not_compiled), content_type='application/json')
             

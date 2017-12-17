@@ -36,7 +36,7 @@ $( document ).ready(
             $("#newFileError").css("display", "none");
             $("#file-name-input").val("");
         });
-        $("#uploadFileError").on("hidden.bs.modal", function(event){
+        $("#fileUploadModel").on("hidden.bs.modal", function(event){
             $("#uploadFileError").css("display", "none");
             $("#uploadErrorMessage").val("Unkown error occured please try later")
             $("#id_file_source").val("");
@@ -185,7 +185,6 @@ function uploadFile(){
     var fdata = new FormData();
     fdata.append("file", document.getElementById('id_file_source').files[0])
     var csrftoken = getCookie('csrftoken');
-    console.log(fdata);
     $.ajax({
         type:"POST",
         url: "uploadFile/",
@@ -200,14 +199,17 @@ function uploadFile(){
     .fail(fileUploadError);
 }
 
-function fileUploadError(jqXHR, textStatus, erroThrown){    
+function fileUploadError(jqXHR, textStatus, erroThrown){
+    console.log("HEREEEEEE");
+    console.log("STATUS:",jqXHR.status);  
     if (jqXHR.status == 400) {
-        $("#uploadErrorMessage").val("File name is invalid, Make sure ir start with a letter and conatains no special characters.")
+        $("#uploadErrorMessage").text("File name is invalid, Make sure ir start with a letter and conatains no special characters and is less than 25 characters.")
     }
     $("#uploadFileError").css("display", "inline");
 }
 
 function fileAdded(response){
+    $('#fileUploadModel').modal('hide');
     $.jGrowl("File added!", {life:1000, theme:'manilla', position:'top-left'});
 }
 // using jQuery
