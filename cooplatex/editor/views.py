@@ -256,9 +256,12 @@ def upload_file(request, ownerID, projectName):
                     dataType='binary/octet-stream'
                     if extension in ['png', 'jpeg', 'svg', 'jpg']:
                         dataType ='image/'+extension
-
+                    isItText = extension in ['txt', 'bib', 'tex']
+                    body =  ""
+                    if isItText:
+                        body= binary.decode()
                     save_file(url, binary, dataType, True)
-                    json_return_not_compiled = {'Error': '', 'Link': '', 'status': 200}
+                    json_return_not_compiled = {'Error': '', 'filename': filename, 'text': isItText, 'status': 200, 'body': body}
                     return HttpResponse(status=200, content=json.dumps(json_return_not_compiled), content_type='application/json')
 
                 except ValueError:

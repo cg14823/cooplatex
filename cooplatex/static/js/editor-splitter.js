@@ -210,6 +210,26 @@ function fileUploadError(jqXHR, textStatus, erroThrown){
 function fileAdded(response){
     $('#fileUploadModel').modal('hide');
     $.jGrowl("File added!", {life:1000, theme:'manilla', position:'top-left'});
+    console.log(response)
+    if (response.text){
+        fname = response.filename.replace(".","");
+        templateNewFile = newFileTemplate.replace("{{f.name_id}}", fname);
+        templateNewFile = templateNewFile.replace("{{f.name_id}}", fname);
+        templateNewFile = templateNewFile.replace("{{f.name_id}}", fname);
+        templateNewFile = templateNewFile.replace("{{f.name}}", response.filename);
+        templateNewFile = templateNewFile.replace("{{f.name}}", response.filename);
+        $("#files").append(templateNewFile);
+        filesBody[fname] ={name: response.filename, body:response.body};
+    }
+    else {
+        console.log("HERE")
+        fname = response.filename.replace(".","");
+        uploadFileTemplate1 = uploadFileTemplate.replace("{{f.name_id}}", fname);
+        uploadFileTemplate1 = uploadFileTemplate1.replace("{{f.name_id}}", fname);
+        uploadFileTemplate1 = uploadFileTemplate1.replace("{{f.name}}", response.filename);
+        $("#files").append(uploadFileTemplate1);
+    }
+    
 }
 // using jQuery
 function getCookie(name) {
@@ -257,9 +277,9 @@ function pdfFail (jqXHR, textStatus, erroThrown){
 
 var csrftoken = getCookie('csrftoken');
 
-var pdfTemplate = '<object data="%LINK_HERE%" type="application/pdf" width="100%" height="100%"> <iframe src="%LINK_HERE%" width="100%" height="100%" style="border: none;">This browser does not support PDFs. Please download the PDF to view it: <a href="%LINK_HERE%">Download PDF</a></iframe></object>'
-var newFileTemplate = `<li id="{{f.name_id}}" class="unselectedfile list-group-item" onclick='toggleFiles("{{f.name_id}}")'>{{f.name}}</li><span style="display:none" name="{{f.name}}" id="{{f.name_id}}-body"></span>`
-
+var pdfTemplate = '<object data="%LINK_HERE%" type="application/pdf" width="100%" height="100%"> <iframe src="%LINK_HERE%" width="100%" height="100%" style="border: none;">This browser does not support PDFs. Please download the PDF to view it: <a href="%LINK_HERE%">Download PDF</a></iframe></object>';
+var newFileTemplate = `<li id="{{f.name_id}}" class="unselectedfile list-group-item" onclick='toggleFiles("{{f.name_id}}")'>{{f.name}}</li><span style="display:none" name="{{f.name}}" id="{{f.name_id}}-body"></span>`;
+var uploadFileTemplate = `<li id="{{f.name_id}}-other" class="unselectedfile list-group-item" onclick='toggleOtherFiles("{{f.name_id}}")'>{{f.name}}</li>`;
 window.downloadFile = function (sUrl) {
     
         //iOS devices do not support downloading. We have to inform user about this.
