@@ -113,10 +113,12 @@ body {
   .currentfile {
     background-color: #007bff;
     color: white;
+    font-size: 2vmin;
   }
 
   .unselectedfile {
     background-color: #eee;
+    font-size: 2vmin;
   }
 
   textarea {

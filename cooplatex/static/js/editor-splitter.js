@@ -46,8 +46,13 @@ $( document ).ready(
     }
 );
 
+function unimplmented() {
+    alert("Sorry this options are currently unimplmented")
+}
+
 function toggleOtherFiles(id){
     console.log("UNIMPLEMENTED");
+    alert("At the moment you can not preview images")
 }
 function toggleFiles(id){
     var currentElemt = $("#files").find(".currentfile")
@@ -120,7 +125,11 @@ function compile () {
         dataType: 'json'
     })
     .done(compileSuccess)
-    .fail(errorF);
+    .fail(compileFail);
+}
+
+function compileFail(){
+    $.jGrowl("Compilation Failed, Logs not available in this version", {life:1000, theme:'error', position:'top-left'});
 }
 
 function compileSuccess(response){
@@ -163,7 +172,6 @@ function success (response){
 }
 
 function errorF(errorResponse){
-    console.log("Not saved");
     $.jGrowl("Action failed :(", {life:1000, theme:'error', position:'top-left'});
 }
 
