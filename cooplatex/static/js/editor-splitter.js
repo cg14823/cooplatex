@@ -200,7 +200,6 @@ function uploadFile(){
 }
 
 function fileUploadError(jqXHR, textStatus, erroThrown){
-    console.log("HEREEEEEE");
     console.log("STATUS:",jqXHR.status);  
     if (jqXHR.status == 400) {
         $("#uploadErrorMessage").text("File name is invalid, Make sure ir start with a letter and conatains no special characters and is less than 25 characters.")
@@ -295,7 +294,7 @@ window.downloadFile = function (sUrl) {
         // Force file download (whether supported by server).
         if (sUrl.indexOf('?') === -1) {
             sUrl += '?download';
-        }file_name
+        }
     
         window.open(sUrl, '_blank');
         return true;
